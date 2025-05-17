@@ -1,2 +1,2 @@
-#QR Code Generator
-## built using HTML, CSS, JavaScript
+## QR Code Generator
+### built using HTML, CSS, JavaScript
