@@ -7,11 +7,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="logo">QR Code Generator</div>
     <div class="container">
             <p>Enter your text or URL</p>
             <input type="text"  placeholder="Text or URL" id="qrText">
             <div id="imgBox">
                 <img src="" id="qrImage">
+                <a id="downloadBtn" download="QRCode.png" style="display: none;">Download QR Code</a>
             </div>
             <button onclick="generateQR()">Generate QR Code</button>
      </div>
@@ -19,12 +21,17 @@
         let imgBox=document.getElementById("imgBox");
         let qrImage=document.getElementById("qrImage");
         let qrText=document.getElementById("qrText");
+        let downloadBtn=document.getElementById("downloadBtn");
 
-        function generateQR()
-        {
-            if(qrText.value.length>0){
-            qrImage.src=" https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + qrText.value;
+        let currentQRUrl = "";
+
+    function generateQR() {
+        let data = qrText.value.trim();
+        if (data.length > 0) {
+            currentQRUrl = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(data);
+            qrImage.src = currentQRUrl;
             imgBox.classList.add("show-img");
+            downloadBtn.style.display = "inline-block";
             }
             else{
                 qrText.classList.add('error');
@@ -33,6 +40,29 @@
                 },1000);
             }
         }
+        downloadBtn.addEventListener("click", async function (e) {
+        e.preventDefault();
+
+        if (!currentQRUrl) return;
+
+        try {
+            const response = await fetch(currentQRUrl, { mode: "cors" });
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "QRCode.png";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            alert("Failed to download image.");
+            console.error(err);
+        }
+    });
      </script>
+     
 </body>
 </html>
